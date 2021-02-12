@@ -1,3 +1,7 @@
+# 1.7.1
+Changes:
+  * JSONFormatter now uses upper case for "level":"value", e.g. "severity":"INFO".
+
 # 1.7.0
 Fixes:
   * the dependency toward a windows terminal library has been removed
