@@ -6,11 +6,11 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/nandosuk/logrus/pkg/testutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	. "github.com/sirupsen/logrus"
-	. "github.com/sirupsen/logrus/internal/testutils"
 )
 
 type TestHook struct {
@@ -37,7 +37,7 @@ func (hook *TestHook) Levels() []Level {
 func TestHookFires(t *testing.T) {
 	hook := new(TestHook)
 
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.Hooks.Add(hook)
 		assert.Equal(t, hook.Fired, false)
 
@@ -70,7 +70,7 @@ func (hook *ModifyHook) Levels() []Level {
 func TestHookCanModifyEntry(t *testing.T) {
 	hook := new(ModifyHook)
 
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.Hooks.Add(hook)
 		log.WithField("wow", "elephant").Print("test")
 	}, func(fields Fields) {
@@ -82,7 +82,7 @@ func TestCanFireMultipleHooks(t *testing.T) {
 	hook1 := new(ModifyHook)
 	hook2 := new(TestHook)
 
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.Hooks.Add(hook1)
 		log.Hooks.Add(hook2)
 
@@ -151,7 +151,7 @@ func (hook *ErrorHook) Levels() []Level {
 func TestErrorHookShouldntFireOnInfo(t *testing.T) {
 	hook := new(ErrorHook)
 
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.Hooks.Add(hook)
 		log.Info("test")
 	}, func(fields Fields) {
@@ -162,7 +162,7 @@ func TestErrorHookShouldntFireOnInfo(t *testing.T) {
 func TestErrorHookShouldFireOnError(t *testing.T) {
 	hook := new(ErrorHook)
 
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.Hooks.Add(hook)
 		log.Error("test")
 	}, func(fields Fields) {
@@ -174,7 +174,7 @@ func TestAddHookRace(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(2)
 	hook := new(ErrorHook)
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		go func() {
 			defer wg.Done()
 			log.AddHook(hook)

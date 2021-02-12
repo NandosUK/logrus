@@ -1,4 +1,6 @@
-module github.com/nandos/logrus
+module github.com/nandosuk/logrus
+
+replace github.com/sirupsen/logrus v1.7.0 => github.com/nandosuk/logrus v1.7.0
 
 require (
 	github.com/sirupsen/logrus v1.7.0

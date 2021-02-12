@@ -12,11 +12,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/nandosuk/logrus/pkg/testutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	. "github.com/sirupsen/logrus"
-	. "github.com/sirupsen/logrus/internal/testutils"
 )
 
 // TestReportCaller verifies that when ReportCaller is set, the 'func' field
@@ -24,7 +24,7 @@ import (
 // Verify that functions within the Logrus package aren't considered when
 // discovering the caller.
 func TestReportCallerWhenConfigured(t *testing.T) {
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.ReportCaller = false
 		log.Print("testNoCaller")
 	}, func(fields Fields) {
@@ -33,17 +33,17 @@ func TestReportCallerWhenConfigured(t *testing.T) {
 		assert.Equal(t, nil, fields["func"])
 	})
 
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.ReportCaller = true
 		log.Print("testWithCaller")
 	}, func(fields Fields) {
 		assert.Equal(t, "testWithCaller", fields["msg"])
 		assert.Equal(t, "info", fields["level"])
 		assert.Equal(t,
-			"github.com/sirupsen/logrus_test.TestReportCallerWhenConfigured.func3", fields[FieldKeyFunc])
+			"github.com/nandosuk/logrus_test.TestReportCallerWhenConfigured.func3", fields[FieldKeyFunc])
 	})
 
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.ReportCaller = true
 		log.Formatter.(*JSONFormatter).CallerPrettyfier = func(f *runtime.Frame) (string, string) {
 			return "somekindoffunc", "thisisafilename"
@@ -54,7 +54,7 @@ func TestReportCallerWhenConfigured(t *testing.T) {
 		assert.Equal(t, "thisisafilename", fields[FieldKeyFile])
 	})
 
-	LogAndAssertText(t, func(log *Logger) {
+	testutils.LogAndAssertText(t, func(log *Logger) {
 		log.ReportCaller = true
 		log.Formatter.(*TextFormatter).CallerPrettyfier = func(f *runtime.Frame) (string, string) {
 			return "somekindoffunc", "thisisafilename"
@@ -107,7 +107,7 @@ func TestReportCallerHelperViaPointer(t *testing.T) {
 }
 
 func TestPrint(t *testing.T) {
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.Print("test")
 	}, func(fields Fields) {
 		assert.Equal(t, "test", fields["msg"])
@@ -116,7 +116,7 @@ func TestPrint(t *testing.T) {
 }
 
 func TestInfo(t *testing.T) {
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.Info("test")
 	}, func(fields Fields) {
 		assert.Equal(t, "test", fields["msg"])
@@ -125,7 +125,7 @@ func TestInfo(t *testing.T) {
 }
 
 func TestWarn(t *testing.T) {
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.Warn("test")
 	}, func(fields Fields) {
 		assert.Equal(t, "test", fields["msg"])
@@ -134,7 +134,7 @@ func TestWarn(t *testing.T) {
 }
 
 func TestLog(t *testing.T) {
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.Log(WarnLevel, "test")
 	}, func(fields Fields) {
 		assert.Equal(t, "test", fields["msg"])
@@ -143,7 +143,7 @@ func TestLog(t *testing.T) {
 }
 
 func TestInfolnShouldAddSpacesBetweenStrings(t *testing.T) {
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.Infoln("test", "test")
 	}, func(fields Fields) {
 		assert.Equal(t, "test test", fields["msg"])
@@ -151,7 +151,7 @@ func TestInfolnShouldAddSpacesBetweenStrings(t *testing.T) {
 }
 
 func TestInfolnShouldAddSpacesBetweenStringAndNonstring(t *testing.T) {
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.Infoln("test", 10)
 	}, func(fields Fields) {
 		assert.Equal(t, "test 10", fields["msg"])
@@ -159,7 +159,7 @@ func TestInfolnShouldAddSpacesBetweenStringAndNonstring(t *testing.T) {
 }
 
 func TestInfolnShouldAddSpacesBetweenTwoNonStrings(t *testing.T) {
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.Infoln(10, 10)
 	}, func(fields Fields) {
 		assert.Equal(t, "10 10", fields["msg"])
@@ -167,7 +167,7 @@ func TestInfolnShouldAddSpacesBetweenTwoNonStrings(t *testing.T) {
 }
 
 func TestInfoShouldAddSpacesBetweenTwoNonStrings(t *testing.T) {
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.Infoln(10, 10)
 	}, func(fields Fields) {
 		assert.Equal(t, "10 10", fields["msg"])
@@ -175,7 +175,7 @@ func TestInfoShouldAddSpacesBetweenTwoNonStrings(t *testing.T) {
 }
 
 func TestInfoShouldNotAddSpacesBetweenStringAndNonstring(t *testing.T) {
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.Info("test", 10)
 	}, func(fields Fields) {
 		assert.Equal(t, "test10", fields["msg"])
@@ -183,7 +183,7 @@ func TestInfoShouldNotAddSpacesBetweenStringAndNonstring(t *testing.T) {
 }
 
 func TestInfoShouldNotAddSpacesBetweenStrings(t *testing.T) {
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.Info("test", "test")
 	}, func(fields Fields) {
 		assert.Equal(t, "testtest", fields["msg"])
@@ -221,7 +221,7 @@ func TestWithFieldsShouldAllowAssignments(t *testing.T) {
 }
 
 func TestUserSuppliedFieldDoesNotOverwriteDefaults(t *testing.T) {
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.WithField("msg", "hello").Info("test")
 	}, func(fields Fields) {
 		assert.Equal(t, "test", fields["msg"])
@@ -229,7 +229,7 @@ func TestUserSuppliedFieldDoesNotOverwriteDefaults(t *testing.T) {
 }
 
 func TestUserSuppliedMsgFieldHasPrefix(t *testing.T) {
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.WithField("msg", "hello").Info("test")
 	}, func(fields Fields) {
 		assert.Equal(t, "test", fields["msg"])
@@ -238,7 +238,7 @@ func TestUserSuppliedMsgFieldHasPrefix(t *testing.T) {
 }
 
 func TestUserSuppliedTimeFieldHasPrefix(t *testing.T) {
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.WithField("time", "hello").Info("test")
 	}, func(fields Fields) {
 		assert.Equal(t, "hello", fields["fields.time"])
@@ -246,7 +246,7 @@ func TestUserSuppliedTimeFieldHasPrefix(t *testing.T) {
 }
 
 func TestUserSuppliedLevelFieldHasPrefix(t *testing.T) {
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.WithField("level", 1).Info("test")
 	}, func(fields Fields) {
 		assert.Equal(t, "info", fields["level"])
@@ -255,7 +255,7 @@ func TestUserSuppliedLevelFieldHasPrefix(t *testing.T) {
 }
 
 func TestDefaultFieldsAreNotPrefixed(t *testing.T) {
-	LogAndAssertText(t, func(log *Logger) {
+	testutils.LogAndAssertText(t, func(log *Logger) {
 		ll := log.WithField("herp", "derp")
 		ll.Info("hello")
 		ll.Info("bye")
@@ -271,7 +271,7 @@ func TestDefaultFieldsAreNotPrefixed(t *testing.T) {
 func TestWithTimeShouldOverrideTime(t *testing.T) {
 	now := time.Now().Add(24 * time.Hour)
 
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.WithTime(now).Info("foobar")
 	}, func(fields Fields) {
 		assert.Equal(t, fields["time"], now.Format(time.RFC3339))
@@ -281,7 +281,7 @@ func TestWithTimeShouldOverrideTime(t *testing.T) {
 func TestWithTimeShouldNotOverrideFields(t *testing.T) {
 	now := time.Now().Add(24 * time.Hour)
 
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.WithField("herp", "derp").WithTime(now).Info("blah")
 	}, func(fields Fields) {
 		assert.Equal(t, fields["time"], now.Format(time.RFC3339))
@@ -292,7 +292,7 @@ func TestWithTimeShouldNotOverrideFields(t *testing.T) {
 func TestWithFieldShouldNotOverrideTime(t *testing.T) {
 	now := time.Now().Add(24 * time.Hour)
 
-	LogAndAssertJSON(t, func(log *Logger) {
+	testutils.LogAndAssertJSON(t, func(log *Logger) {
 		log.WithTime(now).WithField("herp", "derp").Info("blah")
 	}, func(fields Fields) {
 		assert.Equal(t, fields["time"], now.Format(time.RFC3339))
@@ -379,7 +379,7 @@ func TestNestedLoggingReportsCorrectCaller(t *testing.T) {
 	assert.Equal(t, "looks delicious", fields["msg"])
 	assert.Equal(t, "eating raw fish", fields["context"])
 	assert.Equal(t,
-		"github.com/sirupsen/logrus_test.TestNestedLoggingReportsCorrectCaller", fields["func"])
+		"github.com/nandosuk/logrus_test.TestNestedLoggingReportsCorrectCaller", fields["func"])
 	cwd, err := os.Getwd()
 	require.NoError(t, err)
 	assert.Equal(t, filepath.ToSlash(fmt.Sprintf("%s/logrus_test.go:%d", cwd, line-1)), filepath.ToSlash(fields["file"].(string)))
@@ -410,7 +410,7 @@ func TestNestedLoggingReportsCorrectCaller(t *testing.T) {
 	assert.Equal(t, "The hardest workin' man in show business", fields["msg"])
 	assert.Nil(t, fields["fields.msg"], "should not have prefixed previous `msg` entry")
 	assert.Equal(t,
-		"github.com/sirupsen/logrus_test.TestNestedLoggingReportsCorrectCaller", fields["func"])
+		"github.com/nandosuk/logrus_test.TestNestedLoggingReportsCorrectCaller", fields["func"])
 	require.NoError(t, err)
 	assert.Equal(t, filepath.ToSlash(fmt.Sprintf("%s/logrus_test.go:%d", cwd, line-1)), filepath.ToSlash(fields["file"].(string)))
 
