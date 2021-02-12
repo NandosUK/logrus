@@ -199,7 +199,7 @@ func TestFieldsInNestedDictionary(t *testing.T) {
 	}
 
 	// with nested object, "level" shouldn't clash
-	if entry["level"] != "INFO" {
+	if entry["level"] != "info" {
 		t.Errorf("Expected 'level' field to contain 'info'")
 	}
 }

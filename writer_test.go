@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/nandosuk/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 func ExampleLogger_Writer_httpServer() {

@@ -3,7 +3,7 @@ package logrus_test
 import (
 	"testing"
 
-	log "github.com/nandosuk/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
